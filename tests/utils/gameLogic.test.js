@@ -1,6 +1,6 @@
 const { createBoard, addDiscToColumn, checkWin, checkDraw, PLAYER1, PLAYER2, EMPTY } = require('../../src/utils/gameLogic');
 
-describe('Game Logic Tests', () => {
+describe('Connect 4 Game Logic Tests', () => {
     let board;
 
     beforeEach(() => {
@@ -48,7 +48,6 @@ describe('Game Logic Tests', () => {
         }
         expect(checkWin(board, { row: 2, column: 3, player: PLAYER1 })).toBe(PLAYER1);
     });
-    
 
     test('checkDraw should return true when the board is full and there is no winner', () => {
         for (let row = 0; row < 6; row++) {

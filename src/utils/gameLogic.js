@@ -1,25 +1,19 @@
-// Constants for the game
-const ROWS = 6;
-const COLUMNS = 7;
-const EMPTY = 'O';
-const PLAYER1 = 'X';
-const PLAYER2 = 'Y';
-const DRAW = 'DRAW';
+// gameLogic.js
+export const ROWS = 6;
+export const COLUMNS = 7;
+export const EMPTY = 'O';
+export const PLAYER1 = 'X';
+export const PLAYER2 = 'Y';
 
-// Function to create an empty game board
-function createBoard() {
+export function createBoard() {
     let board = [];
     for (let i = 0; i < ROWS; i++) {
-        board[i] = [];
-        for (let j = 0; j < COLUMNS; j++) {
-            board[i][j] = EMPTY;
-        }
+        board.push(Array(COLUMNS).fill(EMPTY));
     }
     return board;
 }
 
-// Function to add a disc to the board
-function addDiscToColumn(board, column, player) {
+export function addDiscToColumn(board, column, player) {
     if (column < 0 || column >= COLUMNS) {
         throw new Error('Column out of bounds');
     }
@@ -34,77 +28,31 @@ function addDiscToColumn(board, column, player) {
     throw new Error('Column is full');
 }
 
-// Function to check for a win
-function checkWin(board, lastMove) {
-    // Implement the logic to check for 4 in a row (horizontally, vertically, diagonally)
-    // This function should return PLAYER1, PLAYER2, or null
-    //check horizontal
+export function checkWin(board, lastMove) {
+    // Check horizontal, vertical, and diagonal wins
+    // Return PLAYER1, PLAYER2, or null
+    return checkLine(board, lastMove, 0, 1) ||  // Horizontal
+           checkLine(board, lastMove, 1, 0) ||  // Vertical
+           checkLine(board, lastMove, 1, 1) ||  // Diagonal (down-right)
+           checkLine(board, lastMove, 1, -1);   // Diagonal (down-left)
+}
+
+function checkLine(board, lastMove, deltaRow, deltaCol) {
     let count = 0;
-    for (let i = 0; i < COLUMNS; i++) {
-        if (board[lastMove.row][i] === lastMove.player) {
+    for (let i = -3; i <= 3; i++) {
+        const r = lastMove.row + i * deltaRow;
+        const c = lastMove.column + i * deltaCol;
+        if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS && board[r][c] === lastMove.player) {
             count++;
-            if (count === 4) {
-                return lastMove.player;
-            }
+            if (count === 4) return lastMove.player;
         } else {
             count = 0;
         }
     }
-    //check vertical
-    count = 0;
-    for (let i = 0; i < ROWS; i++) {
-        if (board[i][lastMove.column] === lastMove.player) {
-            count++;
-            if (count === 4) {
-                return lastMove.player;
-            }
-        } else {
-            count = 0;
-        }
-    }
-    // Check diagonal (top-left to bottom-right)
-    count = 0;
-    for (let i = 0; i < ROWS; i++) {
-        let r = lastMove.row + i - 3;
-        let c = lastMove.column + i - 3;
-        if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS) {
-            if (board[r][c] === lastMove.player) {
-                count++;
-                if (count === 4) return lastMove.player;
-            } else {
-                count = 0;
-            }
-        }
-    }
-
-    // Check anti-diagonal (bottom-left to top-right)
-    count = 0;
-    for (let i = 0; i < ROWS; i++) {
-        let r = lastMove.row - i + 3;
-        let c = lastMove.column + i - 3;
-        if (r >= 0 && r < ROWS && c >= 0 && c < COLUMNS) {
-            if (board[r][c] === lastMove.player) {
-                count++;
-                if (count === 4) return lastMove.player;
-            } else {
-                count = 0;
-            }
-        }
-    }
-
     return null;
 }
 
-// Function to check for a draw
-function checkDraw(board) {
-    // Implement the logic to check if the board is full and no player has won
-    // This function should return true or false
-    for (let i = 0; i < COLUMNS; i++) {
-        if (board[0][i] === EMPTY) {
-            return false;
-        }
-    }
-    return true;
+export function checkDraw(board) {
+    return board.every(row => row.every(cell => cell !== EMPTY));
 }
 
-module.exports = { createBoard, addDiscToColumn, checkWin, checkDraw, PLAYER1, PLAYER2, DRAW, EMPTY };
