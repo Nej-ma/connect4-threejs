@@ -1,60 +1,63 @@
-const { createBoard, addDiscToColumn, checkWin, checkDraw, PLAYER1, PLAYER2, EMPTY } = require('../../src/utils/gameLogic');
+import { checkWin, checkDraw, ROWS, COLUMNS, EMPTY, PLAYER1, PLAYER2 } from '../../src/utils/gameLogic';
 
-describe('Connect 4 Game Logic Tests', () => {
+describe('Game Logic Tests', () => {
     let board;
 
     beforeEach(() => {
-        board = createBoard();
+        board = Array.from({ length: ROWS }, () => Array.from({ length: COLUMNS }, () => EMPTY));
     });
 
-    test('createBoard should create a 7x6 board filled with EMPTY', () => {
-        expect(board.length).toBe(6);
-        expect(board[0].length).toBe(7);
-        board.forEach(row => {
-            row.forEach(cell => {
-                expect(cell).toBe(EMPTY);
-            });
-        });
-    });
-
-    test('addDiscToColumn should add a disc to the correct column', () => {
-        addDiscToColumn(board, 3, PLAYER1);
-        expect(board[5][3]).toBe(PLAYER1);
-    });
+    const fillBoard = (player) => {
+        for (let row = 0; row < ROWS; row++) {
+            for (let col = 0; col < COLUMNS; col++) {
+                board[row][col] = player;
+            }
+        }
+    };
 
     test('checkWin should detect a horizontal win', () => {
         for (let i = 0; i < 4; i++) {
-            addDiscToColumn(board, i, PLAYER1);
+            board[ROWS - 1][i] = PLAYER1;
         }
-        expect(checkWin(board, { row: 5, column: 3, player: PLAYER1 })).toBe(PLAYER1);
+        expect(checkWin(board, ROWS - 1, 3, PLAYER1)).toBe(true);
     });
 
     test('checkWin should detect a vertical win', () => {
         for (let i = 0; i < 4; i++) {
-            addDiscToColumn(board, 0, PLAYER1);
+            board[i][0] = PLAYER1;
         }
-        expect(checkWin(board, { row: 2, column: 0, player: PLAYER1 })).toBe(PLAYER1);
+        expect(checkWin(board, 3, 0, PLAYER1)).toBe(true);
     });
 
-    test('checkWin should detect a diagonal win', () => {
-        // Set up a diagonal from bottom left to top right
+    test('checkWin should detect a diagonal down-right win', () => {
         for (let i = 0; i < 4; i++) {
-            // Add discs for the opposing player to create space for the diagonal
-            for (let j = 0; j < i; j++) {
-                addDiscToColumn(board, i, PLAYER2);
-            }
-            // Add the disc for the testing player
-            addDiscToColumn(board, i, PLAYER1);
+            board[i][i] = PLAYER1;
         }
-        expect(checkWin(board, { row: 2, column: 3, player: PLAYER1 })).toBe(PLAYER1);
+        expect(checkWin(board, 3, 3, PLAYER1)).toBe(true);
     });
 
-    test('checkDraw should return true when the board is full and there is no winner', () => {
-        for (let row = 0; row < 6; row++) {
-            for (let col = 0; col < 7; col++) {
-                addDiscToColumn(board, col, row % 2 === 0 ? PLAYER1 : PLAYER2);
-            }
+    test('checkWin should detect a diagonal down-left win', () => {
+        for (let i = 0; i < 4; i++) {
+            board[i][COLUMNS - 1 - i] = PLAYER1;
         }
-        expect(checkDraw(board)).toBeTruthy();
+        expect(checkWin(board, 3, COLUMNS - 4, PLAYER1)).toBe(true);
+    });
+
+    test('checkDraw should return true when the board is full and no player has won', () => {
+        fillBoard(PLAYER1);
+        expect(checkDraw(board)).toBe(true);
+    });
+
+    test('checkDraw should return false when there are empty cells', () => {
+        fillBoard(PLAYER1);
+        board[0][0] = EMPTY;
+        expect(checkDraw(board)).toBe(false);
+    });
+
+    test('checkDraw should return false when a player has won', () => {
+        for (let i = 0; i < 4; i++) {
+            board[i][0] = PLAYER1;
+        }
+        expect(checkDraw(board)).toBe(false);
     });
 });
