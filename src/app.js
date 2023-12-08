@@ -10,8 +10,8 @@ function App() {
       <pointLight position={[10, 10, 10]} />
       <Board />
       <OrbitControls target={[0, 1, 0]} />
-        <Environment preset="sunset" />
-    </Canvas>
+      <Environment preset="dawn" background blur={0.5} />
+      </Canvas>
   );
 }
 

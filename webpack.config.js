@@ -26,6 +26,19 @@ module.exports = {
             },
           },
         ]
+        },
+        {
+            test: /\.(jpg)$/i,
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '[path][name].[ext]',
+                },
+              },
+            ]
+            },
+    ]
   },
   plugins: [
     new HtmlWebpackPlugin({

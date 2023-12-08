@@ -1,4 +1,3 @@
-// src/components/Board.js
 import React from 'react';
 import Column from './Column';
 import BoardFrame from './BoardFrame';
